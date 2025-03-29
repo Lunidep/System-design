@@ -1,4 +1,4 @@
-package org.example.lab2.model;
+package org.example.lab2.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

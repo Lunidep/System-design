@@ -1,8 +1,8 @@
-package org.example.lab2.service;
+package org.example.lab2.service.user;
 
-import org.example.lab2.model.UserCustom;
-import org.example.lab2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.example.lab2.model.dto.UserCustom;
+import org.example.lab2.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,10 +1,5 @@
-package org.example.lab2.configuration;
+package org.example.lab2.configuration.security;
 
-import org.example.lab2.model.Jwt;
-import org.example.lab2.model.UsernamePasswordAuthentication;
-import org.example.lab2.service.ClaimField;
-import org.example.lab2.service.HeaderValues;
-import org.example.lab2.service.JwtService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -12,6 +7,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.lab2.model.dto.Jwt;
+import org.example.lab2.service.JwtService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,7 +19,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static org.example.lab2.model.enums.ClaimField.ROLE;
+import static org.example.lab2.model.enums.ClaimField.USERNAME;
+import static org.example.lab2.model.enums.HeaderValues.AUTHORIZATION;
+import static org.example.lab2.model.enums.HeaderValues.BEARER;
 
 
 @Component
@@ -32,17 +33,21 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-		String authorizationKey = request.getHeader(HeaderValues.AUTHORIZATION);
-		if (Optional.ofNullable(authorizationKey).isPresent() && authorizationKey.startsWith(HeaderValues.BEARER)) {
-			authorizationKey = authorizationKey.replace(HeaderValues.BEARER, "");
+		String authorizationKey = request.getHeader(AUTHORIZATION.getName());
+		if (Optional.ofNullable(authorizationKey).isPresent() && authorizationKey.startsWith(BEARER.getName())) {
+			authorizationKey = authorizationKey.replace(BEARER.getName(), "");
+
 			try {
 				if (jwtService.isValidJwt(new Jwt(authorizationKey))) {
 					Claims claims = jwtService.getClaims(authorizationKey);
-					String username = String.valueOf(claims.get(ClaimField.USERNAME));
-					List roles = claims.get(ClaimField.ROLE, List.class);
-					List<GrantedAuthority> authorities =
-							(List<GrantedAuthority>) roles.stream().map(role -> new SimpleGrantedAuthority(role.toString())).collect(Collectors.toList());
-					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthentication(username, null, authorities);
+					String username = String.valueOf(claims.get(USERNAME.getName()));
+					List roles = claims.get(ROLE.getName(), List.class);
+
+					List<GrantedAuthority> authorities = (List<GrantedAuthority>) roles.stream()
+							.map(role -> new SimpleGrantedAuthority(role.toString()))
+							.toList();
+
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				}
 			} catch (JwtException e) {

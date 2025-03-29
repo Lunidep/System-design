@@ -1,6 +1,6 @@
 package org.example.lab2.repository;
 
-import org.example.lab2.model.User;
+import org.example.lab2.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

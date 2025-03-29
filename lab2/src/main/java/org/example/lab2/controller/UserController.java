@@ -1,8 +1,8 @@
 package org.example.lab2.controller;
 
-import org.example.lab2.model.User;
-import org.example.lab2.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.example.lab2.model.entity.User;
+import org.example.lab2.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

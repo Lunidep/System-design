@@ -1,5 +1,7 @@
 package org.example.lab2.configuration;
 
+import org.example.lab2.configuration.security.InitialAuthenticationFilter;
+import org.example.lab2.configuration.security.JwtAuthorizationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

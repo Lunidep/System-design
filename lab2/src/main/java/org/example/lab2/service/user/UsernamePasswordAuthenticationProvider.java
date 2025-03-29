@@ -1,4 +1,4 @@
-package org.example.lab2.configuration;
+package org.example.lab2.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;

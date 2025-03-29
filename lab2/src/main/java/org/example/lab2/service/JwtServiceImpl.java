@@ -1,12 +1,12 @@
 package org.example.lab2.service;
 
-import org.example.lab2.model.Jwt;
-import org.example.lab2.model.User;
-import org.example.lab2.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.example.lab2.model.dto.Jwt;
+import org.example.lab2.model.entity.User;
+import org.example.lab2.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,6 +18,10 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.example.lab2.model.enums.ClaimField.ROLE;
+import static org.example.lab2.model.enums.ClaimField.USERNAME;
+import static org.example.lab2.model.enums.ClaimField.USER_ID;
 
 
 @Service
@@ -43,9 +47,9 @@ public class JwtServiceImpl implements JwtService {
 		return Jwts.builder()
 				.setClaims(
 						Map.of(
-								ClaimField.USERNAME, authentication.getName(),
-								ClaimField.ROLE, authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
-								ClaimField.USER_ID, String.valueOf(userRepository.findByUsername(authentication.getName()).get().getId())))
+								USERNAME.getName(), authentication.getName(),
+								ROLE.getName(), authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()),
+								USER_ID.getName(), String.valueOf(userRepository.findByUsername(authentication.getName()).get().getId())))
 				.setExpiration(new Date(new Date().getTime() + jwtExpiration))
 				.setSubject(authentication.getName())
 				.signWith(generatedSecretKey())
@@ -69,7 +73,7 @@ public class JwtServiceImpl implements JwtService {
 				.parseClaimsJws(jwt.getToken())
 				.getBody();
 
-		Optional<User> user = userRepository.findByUsername(String.valueOf(claims.get(ClaimField.USERNAME)));
+		Optional<User> user = userRepository.findByUsername(String.valueOf(claims.get(USERNAME.getName())));
 
 		return claims.getExpiration().after(new Date()) && user.isPresent();
 	}

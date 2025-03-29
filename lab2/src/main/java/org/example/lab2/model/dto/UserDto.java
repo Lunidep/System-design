@@ -1,4 +1,4 @@
-package org.example.lab2.dto;
+package org.example.lab2.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

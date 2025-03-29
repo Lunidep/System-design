@@ -1,4 +1,4 @@
-package org.example.lab2.model;
+package org.example.lab2.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package org.example.lab2.service;
 
-import org.example.lab2.model.Jwt;
 import io.jsonwebtoken.Claims;
+import org.example.lab2.model.dto.Jwt;
 import org.springframework.security.core.Authentication;
 
 
