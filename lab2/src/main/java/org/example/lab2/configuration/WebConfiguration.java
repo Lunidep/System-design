@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 
 @Configuration
 public class WebConfiguration {
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
@@ -25,10 +26,12 @@ public class WebConfiguration {
 												   InitialAuthenticationFilter initialAuthenticationFilter,
 												   JwtAuthorizationFilter jwtAuthorizationFilter) throws Exception {
 
-		http.addFilterAt(initialAuthenticationFilter, BasicAuthenticationFilter.class).addFilterAt(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
+		http.addFilterAt(initialAuthenticationFilter, BasicAuthenticationFilter.class)
+				.addFilterAt(jwtAuthorizationFilter, BasicAuthenticationFilter.class);
 
 		http.authorizeHttpRequests(authz -> authz
 				.requestMatchers("/h2-console/**").permitAll()
+				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
 				.anyRequest().authenticated());
 
 		http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
@@ -38,3 +41,4 @@ public class WebConfiguration {
 		return http.build();
 	}
 }
+
