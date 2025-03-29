@@ -1,10 +1,10 @@
-package org.example.lab2.service;
+package org.example.lab2.service.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
-import org.example.lab2.model.dto.Jwt;
+import org.example.lab2.model.dto.security.Jwt;
 import org.example.lab2.model.entity.User;
 import org.example.lab2.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;

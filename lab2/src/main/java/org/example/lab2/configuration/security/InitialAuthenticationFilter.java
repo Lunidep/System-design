@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.lab2.model.dto.UserDto;
-import org.example.lab2.service.JwtServiceImpl;
+import org.example.lab2.service.security.JwtServiceImpl;
 import org.example.lab2.service.user.UsernamePasswordAuthenticationProvider;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -1,4 +1,4 @@
-package org.example.lab2.model.dto;
+package org.example.lab2.model.dto.security;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
