@@ -1,16 +1,19 @@
 package org.example.lab2.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.lab2.model.dto.ProductDto;
+import org.example.lab2.configuration.aspect.CustomAuthorize;
+import org.example.lab2.model.entity.Product;
 import org.example.lab2.service.product.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/products")
@@ -18,13 +21,28 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping
-    public ResponseEntity<ProductDto> createProduct(@RequestBody ProductDto product) {
-        return ResponseEntity.ok(productService.createProduct(product));
+    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @GetMapping("/{id}/info")
+    public ResponseEntity<Product> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<ProductDto>> getAllProducts() {
-        return ResponseEntity.ok(productService.getAllProducts());
+    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @PostMapping("/create")
+    public ResponseEntity<Product> create(@RequestBody Product product) {
+        return new ResponseEntity<>(productService.create(product), HttpStatus.CREATED);
+    }
+
+    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @PutMapping("/{id}/update")
+    public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
+        return ResponseEntity.ok(productService.update(id, product));
+    }
+
+    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
