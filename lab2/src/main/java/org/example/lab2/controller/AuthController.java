@@ -1,6 +1,7 @@
 package org.example.lab2.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.lab2.configuration.aspect.CustomAuthorize;
 import org.example.lab2.model.dto.UserDto;
 import org.example.lab2.service.security.JwtServiceImpl;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class AuthController {
     private final JwtServiceImpl jwtService;
     private final AuthenticationManager authenticationManager;
 
+    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody UserDto userDto) {
 

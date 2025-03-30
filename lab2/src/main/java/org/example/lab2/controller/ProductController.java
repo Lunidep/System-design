@@ -27,19 +27,19 @@ public class ProductController {
         return ResponseEntity.ok(productService.getById(id));
     }
 
-    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @CustomAuthorize({"ROLE_ADMIN"})
     @PostMapping("/create")
     public ResponseEntity<Product> create(@RequestBody Product product) {
         return new ResponseEntity<>(productService.create(product), HttpStatus.CREATED);
     }
 
-    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @CustomAuthorize({"ROLE_ADMIN"})
     @PutMapping("/{id}/update")
     public ResponseEntity<Product> update(@PathVariable Long id, @RequestBody Product product) {
         return ResponseEntity.ok(productService.update(id, product));
     }
 
-    @CustomAuthorize({"ROLE_USER", "ROLE_ADMIN"})
+    @CustomAuthorize({"ROLE_ADMIN"})
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         productService.delete(id);
