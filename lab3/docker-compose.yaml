@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: shop_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./user-service/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    networks:
+      - shop-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8000:8000"
+    environment:
+      - JWT_SECRET_KEY=your-secret-key
+      - JWT_ALGORITHM=HS256
+      - DATABASE_URL=postgresql://admin:secret@postgres:5432/shop_db
+    depends_on:
+      - postgres
+    networks:
+      - shop-network
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8001:8001"
+    environment:
+      - JWT_SECRET_KEY=your-secret-key
+      - JWT_ALGORITHM=HS256
+      - DATABASE_URL=postgresql://admin:secret@postgres:5432/shop_db
+    depends_on:
+      - postgres
+    networks:
+      - shop-network
+
+volumes:
+  postgres_data:
+
+networks:
+  shop-network:
+    driver: bridge
