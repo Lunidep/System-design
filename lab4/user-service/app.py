@@ -9,7 +9,6 @@ import jwt
 from passlib.context import CryptContext
 from uvicorn import run
 
-# Настройка логирования
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -22,10 +21,8 @@ logger = logging.getLogger(__name__)
 
 app = FastAPI()
 
-# Конфигурация БД
 DATABASE_URL = "postgresql://postgres:postgres@database:5432/shop_db"
 
-# JWT конфигурация
 SECRET_KEY = "my-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -33,7 +30,6 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-# Модели данных
 class User(BaseModel):
     username: str
     full_name: Optional[str] = None
@@ -58,7 +54,6 @@ class Cart(BaseModel):
     user_id: str
     items: List[CartItem]
 
-# Подключение к БД
 async def get_db():
     conn = await asyncpg.connect(DATABASE_URL)
     try:
@@ -66,13 +61,11 @@ async def get_db():
     finally:
         await conn.close()
 
-# Инициализация БД
 @app.on_event("startup")
 async def startup_event():
     logger.info("Initializing database...")
     conn = await asyncpg.connect(DATABASE_URL)
     try:
-        # Создание таблицы пользователей
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -85,7 +78,6 @@ async def startup_event():
             )
         ''')
         
-        # Создание таблицы корзин
         await conn.execute('''
             CREATE TABLE IF NOT EXISTS carts (
                 user_id VARCHAR(50) PRIMARY KEY,
@@ -94,7 +86,6 @@ async def startup_event():
             )
         ''')
         
-        # Проверка наличия тестовых данных
         count = await conn.fetchval("SELECT COUNT(*) FROM users")
         if count == 0:
             hashed_pass = pwd_context.hash("secret")
@@ -109,7 +100,6 @@ async def startup_event():
     finally:
         await conn.close()
 
-# Вспомогательные функции
 async def get_user(db, username: str):
     user = await db.fetchrow(
         "SELECT * FROM users WHERE username = $1", username
@@ -132,7 +122,6 @@ def create_access_token(data: dict, expires_delta: timedelta):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-# Проверка токена
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
     db = Depends(get_db)
@@ -159,7 +148,6 @@ async def get_current_user(
         raise credentials_exception
     return user
 
-# API endpoints
 @app.post("/token", response_model=Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -198,7 +186,6 @@ async def create_user(
             VALUES ($1, $2, $3, $4)
         ''', user.username, user.full_name, user.email, hashed_password)
         
-        # Создаем пустую корзину для нового пользователя
         await db.execute('''
             INSERT INTO carts (user_id)
             VALUES ($1)
@@ -256,20 +243,17 @@ async def add_to_cart(
 ):
     logger.info(f"Adding product {product_id} to cart for user {current_user['username']}")
     
-    # Получаем текущую корзину
     cart = await db.fetchrow(
         "SELECT items FROM carts WHERE user_id = $1", current_user["username"]
     )
     
     if not cart:
-        # Если корзины нет, создаем новую
         items = [{"product_id": product_id, "quantity": quantity}]
         await db.execute('''
             INSERT INTO carts (user_id, items)
             VALUES ($1, $2::jsonb)
         ''', current_user["username"], items)
     else:
-        # Обновляем существующую корзину
         items = cart["items"]
         found = False
         for item in items:

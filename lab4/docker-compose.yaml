@@ -10,7 +10,8 @@ services:
       - JWT_SECRET_KEY=my-secret-key
       - JWT_ALGORITHM=HS256
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - shop-network
 
@@ -35,6 +36,11 @@ services:
       - POSTGRES_DB=shop_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - shop-network
 
