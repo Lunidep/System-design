@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  user-service:
+    build: ./user-service
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/shop_db
+      - JWT_SECRET_KEY=my-secret-key
+      - JWT_ALGORITHM=HS256
+    depends_on:
+      - database
+    networks:
+      - shop-network
+
+  product-service:
+    build: ./product-service
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017
+      - JWT_SECRET_KEY=my-secret-key
+      - JWT_ALGORITHM=HS256
+    depends_on:
+      - mongo
+    networks:
+      - shop-network
+
+  database:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=shop_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - shop-network
+
+  mongo:
+    image: mongo:5.0
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - shop-network
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - shop-network
+networks:
+  shop-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mongo_data:
+  redis_data:
