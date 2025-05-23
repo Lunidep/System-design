@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+asyncpg
+python-jose[cryptography]
+passlib
+python-multipart
+aioredis
+pyjwt
+redis

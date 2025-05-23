@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+motor
+python-jose[cryptography]
+passlib
+python-multipart
+aioredis
+pymongo
+pyjwt
+confluent-kafka
